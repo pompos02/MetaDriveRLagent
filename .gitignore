@@ -1,0 +1,10 @@
+.DS_Store
+# Ignore logs, checkpoints, and Python cache
+logs/
+checkpoints/
+__pycache__/
+
+# Recursively ignore these folders from any subdirectory
+**/logs/
+**/checkpoints/
+**/__pycache__/
