@@ -7,15 +7,16 @@ from metadrive.component.map.base_map import BaseMap
 from metadrive.component.map.pg_map import parse_map_config, MapGenerateMethod
 from numpy import clip
 
-class StraightCornerEnv(MetaDriveEnv):
+class StraightEnv(MetaDriveEnv):
     @classmethod
     def default_config(cls):
-        config = super(StraightCornerEnv, cls).default_config()
+        config = super(StraightEnv, cls).default_config()
 
         # Use your LidarStateObservation (or StateObservation)
         config["agent_observation"] = LidarStateObservation
 
-        config["map"] = "SSSCSSSSC"
+        # Force the map to "SSS" (3-segment straight)
+        config["map"] = "SSSSSSSSS"
 
         # Example: no traffic
         config["traffic_density"] = 0.0
@@ -28,7 +29,7 @@ class StraightCornerEnv(MetaDriveEnv):
         config["use_multi_discrete"] = False
 
         # Example horizon
-        config["horizon"] = 10000
+        config["horizon"] = 4096
         # map config
         config["map_config"].update({
             BaseMap.GENERATE_TYPE: MapGenerateMethod.BIG_BLOCK_NUM,
@@ -68,20 +69,10 @@ class StraightCornerEnv(MetaDriveEnv):
         config["crash_building_penalty"]= 50.0
         config["out_of_road_penalty"]= 50.0
         config["driving_reward"]= 1.0
-        config["speed_reward"]= 0.1
-        config["route_reward"]= 0.5 # CHANGED PUT ON ANAFORA
+        config["speed_reward"]= 1.0
+
         config["use_lateral_reward"] = False
         config["out_of_route_done"] = False
-        config["log_level"] = 50 # supress output
-
-        config["crash_vehicle_done"] = False
-        config["crash_object_done"] = True
-        config["on_broken_line_done"] = False
-        config["out_of_road_done"] = True
-        config["out_of_route_done"] = True
-        config["on_continuous_line_done"] = False
-        config["success_terminate"] = True
-
         
         # ===== Termination Scheme =====
         # out_of_route_done=False,
@@ -124,9 +115,7 @@ class StraightCornerEnv(MetaDriveEnv):
         reward = 0.0
         reward += self.config["speed_reward"] * (vehicle.speed_km_h / vehicle.max_speed_km_h) 
         reward += self.config["driving_reward"]*(long_now - long_last) * positive_road
-        # reward += self.config["route_reward"] * vehicle.navigation.route_completion
 
-        
         # MAX_SAFE_SPEED = 40.0  # km/h
         # current_speed = vehicle.speed_km_h
         # print("Current speed: ", current_speed)
@@ -148,16 +137,8 @@ class StraightCornerEnv(MetaDriveEnv):
         elif vehicle.crash_sidewalk:
             reward += -self.config["crash_sidewalk_penalty"]
         step_info["route_completion"] = vehicle.navigation.route_completion
-
-        # === Termination condition flags ===
-
-        out_of_road = self._is_out_of_road(vehicle)
-        crash_vehicle = vehicle.crash_vehicle
-        crash_object = vehicle.crash_object
-        crash_sidewalk = vehicle.crash_sidewalk
-
-        step_info["has_failed"] = out_of_road or crash_vehicle or crash_object or crash_sidewalk
-
+        step_info["speed"] = vehicle.speed_km_h
+        
         step_info["step_reward"] = reward
         return reward, step_info
     
