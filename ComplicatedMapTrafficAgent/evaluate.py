@@ -1,18 +1,17 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
 import numpy as np
-from env import MyEnvNoTraffic
+from env import MyEnvTraffic
 
 # 1) Load the trained model
-model = PPO.load("ppo_dummy_continued.zip")
+model = PPO.load("ComplicatedMapTrafficAgent/ppo_continued.zip")
 
 config = {"use_render": True,
         "on_continuous_line_done": False,
         "out_of_road_done": True,
         }
-env = MyEnvNoTraffic(config)
+env = MyEnvTraffic(config)
 
-# If your environment has a new-style reset, do:
 obs, info = env.reset()
 
 # 3) Run a few episodes
@@ -29,11 +28,10 @@ for ep in range(num_episodes):
 
         # Step
         obs, reward, terminated, truncated, info = env.step(action)
+        if info.get("crash_vehicle", 0) > 0:
+            print(f"Crash vehicle {info['crash_vehicle']}")
         episode_reward += reward
 
-        # Render the environment
-        # If your environment uses "env.render()", call it each step:
-        env.render()
 
     print(f"Episode {ep+1} reward: {episode_reward}")
 

@@ -6,7 +6,7 @@ from stable_baselines3.common.callbacks import (
     CheckpointCallback,
     CallbackList
 )
-from env import MyEnvNoTraffic
+from env import MyEnvTraffic
 # --- CHANGE HERE: Import DummyVecEnv instead of SubprocVecEnv ---
 from stable_baselines3.common.vec_env import DummyVecEnv
 from functools import partial
@@ -21,6 +21,7 @@ class CustomMetricsCallback(BaseCallback):
         self.episode_durations = []
         self.current_episode_rewards = None
         self.current_episode_steps = None
+        self.crash = 0
 
     def _on_training_start(self) -> None:
         # This will still work correctly, even if n_envs is 1
@@ -33,15 +34,15 @@ class CustomMetricsCallback(BaseCallback):
         infos = self.locals.get("infos", [])
         dones = self.locals.get("dones", [])
 
-        # This loop will just run once if num_envs is 1
         for i in range(self.training_env.num_envs):
             self.current_episode_rewards[i] += rewards[i]
             self.current_episode_steps[i] += 1
-
+            self.crash += infos[i].get("crash", 0) # Added crash tracking
             if dones[i]:
                 # Log episode metrics
                 self.episode_rewards.append(self.current_episode_rewards[i])
                 self.episode_durations.append(self.current_episode_steps[i])
+                self.logger.record("custom/crash", self.crash) # Log crash count
 
                 # Check for success
                 # Ensure 'route_completion' is always in infos, handle potential KeyError if not
@@ -51,6 +52,7 @@ class CustomMetricsCallback(BaseCallback):
                 # Reset counters
                 self.current_episode_rewards[i] = 0.0
                 self.current_episode_steps[i] = 0
+                self.crash = 0
 
         return True
 
@@ -59,18 +61,20 @@ class CustomMetricsCallback(BaseCallback):
         if self.episode_rewards:
             avg_reward = np.mean(self.episode_rewards)
             avg_duration = np.mean(self.episode_durations)
+            avg_crash = np.mean(self.crash) # Average crash count per episode
             # Ensure division by zero doesn't happen if len is 0 (though checked by if)
             success_rate = self.successful_episodes / len(self.episode_rewards) if len(self.episode_rewards) > 0 else 0
         else:
             avg_reward = 0
             avg_duration = 0
             success_rate = 0
+            avg_crash = 0
 
         self.logger.record("custom/avg_reward", avg_reward)
         self.logger.record("custom/avg_episode_duration", avg_duration)
         self.logger.record("custom/success_rate", success_rate)
         self.logger.record("custom/successful_episodes_in_rollout", self.successful_episodes) # Renamed for clarity
-
+        self.logger.record("custom/avg_crash", avg_crash) # Log average crash count
         # Reset stats for the next rollout
         self.successful_episodes = 0
         self.episode_rewards = []
@@ -83,18 +87,16 @@ class CustomMetricsCallback(BaseCallback):
 def make_env(seed: int):
     def _init():
         print(f"Initializing environment with seed {seed}...") # Added print for debugging
-        # Consider setting traffic_density=0.0 if MyEnvNoTraffic truly means no traffic
-        env = MyEnvNoTraffic(config=dict(
+        env = MyEnvTraffic(config=dict(
             num_scenarios=1, # Set num_scenarios for this specific env instance
             start_seed=seed,
-            traffic_density=0.0  # Explicitly setting to 0 based on class name assumption
         ))
         print(f"Environment with seed {seed} initialized.") # Added print for debugging
         return env
     return _init
 
 if __name__ == "__main__":
-    total_steps = 30_000_000 # Reduce this significantly for initial testing/debugging
+    total_steps = 5_000_000 # Reduce this significantly for initial testing/debugging
 
     # --- CHANGE HERE: Use DummyVecEnv ---
     # Create a single environment running in the main process
@@ -104,6 +106,12 @@ if __name__ == "__main__":
         make_env(seed=i) for i in range(num_envs)
     ])
     print("DummyVecEnv created.")
+    print("Loading pretrained model...")
+    model = PPO.load(
+        "ppoPeriploko3NoTrafALLAGES",
+        env=env,                
+    )
+    print("Model loaded. Resuming training...")
 
     policy_kwargs = dict(
         net_arch=[256, 256],
@@ -111,33 +119,12 @@ if __name__ == "__main__":
         #log_std_init = -2.0 
     )
 
-    model_verbose_level = 1 # Set to 1 or 2 for more SB3 output
-
-    print("Creating PPO model...")
-    model = PPO(
-        policy="MlpPolicy",
-        policy_kwargs=policy_kwargs,
-        env=env,
-        verbose=model_verbose_level, # Increased verbosity
-        n_steps=4096,           # Runs 4096 steps in the single env before updating
-        batch_size=256,         # Samples batches of 256 from the 4096 steps
-        learning_rate=5e-5,
-        gamma=0.99,
-        gae_lambda=0.97,
-        clip_range=0.2,
-        ent_coef=0.01,
-        vf_coef=0.5,
-        max_grad_norm=0.25,
-        tensorboard_log="./logs/tb_logs/"
-    )
-    print("PPO model created.")
-
     # Checkpoint callback remains the same, but saving vec_normalize might not be needed
     # if you don't wrap the DummyVecEnv in VecNormalize
     checkpoint_callback = CheckpointCallback(
         save_freq=max(100_000 // num_envs, 1), 
         save_path="./checkpoints",
-        name_prefix="ppo_dummy", # Changed prefix slightly
+        name_prefix="ppo_dummy", 
         save_replay_buffer=False, # PPO doesn't use a replay buffer by default
         save_vecnormalize=False # Set to False unless you explicitly use VecNormalize
     )
@@ -153,6 +140,7 @@ if __name__ == "__main__":
         model.learn(
             total_timesteps=total_steps,
             callback=combined_callback,
+            reset_num_timesteps=False, # Keep the number of timesteps from the loaded model
             progress_bar=True
         )
         print("Training finished successfully.")
@@ -163,8 +151,8 @@ if __name__ == "__main__":
 
 
     try:
-        model.save("ppo_dummy") # Changed save name slightly
-        print("Model saved as ppo_dummy.zip")
+        model.save("ppo_dummy_continued") # Changed save name slightly
+        print("Model saved as ppo_dummy_continued.zip")
     except Exception as e:
         print(f"An error occurred during model saving: {e}")
 

@@ -4,7 +4,7 @@ import numpy as np
 from env import MyEnvNoTraffic
 
 # 1) Load the trained model
-model = PPO.load("ppo_dummy_continued.zip")
+model = PPO.load("ppoPeriplokoNoTraf.zip")
 
 env = MyEnvNoTraffic()
 
@@ -16,9 +16,7 @@ successful_episodes = 0
 episode_steps_list = []
 successful_episodes_count = 0
 successful_episode_steps = []  
-episode_steps = []
-crashes = []
-route_progress = []
+
 for ep in range(num_eval_episodes):
     obs, info = env.reset()
     terminated, truncated = False, False
@@ -27,20 +25,13 @@ for ep in range(num_eval_episodes):
     is_successful = False # Flag for success in this episode
 
     while not (terminated or truncated):
-        crash_counter = 0
         action, _ = model.predict(obs, deterministic=True)
         obs, reward, terminated, truncated, info = env.step(action)
         steps += 1
         route_completion = info.get("route_completion")
-        iscrashed = info.get("crash_vehicle", 0)
-        if iscrashed > 0:
-            crash_counter += 1
         if route_completion >= 0.99:
                 is_successful = True
                 terminated = True
-    crashes.append(crash_counter) # Append crash count for this episode
-    route_progress.append(route_completion) # Append route completion for this episode
-    episode_steps.append(steps) # Append steps for this episode
     # Episode finished, record results
     if is_successful: # Check if the episode was flagged as successful
         successful_episodes_count += 1
@@ -59,9 +50,6 @@ if num_eval_episodes > 0:
     print(f"Total episodes evaluated: {num_eval_episodes}")
     print(f"Successful episodes: {successful_episodes_count}")
     print(f"Success rate: {success_rate:.2f}%")
-    print(f"Average route completion: {np.mean(route_progress):.2f}")
-    print(f"Average crashes per episode: {np.mean(crashes):.2f}")
-    print(f"Average steps per episode: {np.mean(episode_steps):.2f}")
 else:
     print("No episodes were evaluated.")
     success_rate = 0

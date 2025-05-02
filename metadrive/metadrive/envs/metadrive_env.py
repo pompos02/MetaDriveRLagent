@@ -75,7 +75,7 @@ METADRIVE_DEFAULT_CONFIG = dict(
     crash_sidewalk_penalty=0.0,
     driving_reward=1.0,
     speed_reward=0.1,
-    use_lateral_reward=False,
+    use_lateral_reward=True, #CHANGED FROM DEFAULT
 
     # ===== Cost Scheme =====
     crash_vehicle_cost=1.0,

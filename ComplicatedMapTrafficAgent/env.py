@@ -5,7 +5,7 @@ from metadrive.component.map.base_map import BaseMap
 from metadrive.component.map.pg_map import parse_map_config, MapGenerateMethod
 import numpy as np
 
-class MyEnvNoTraffic(MetaDriveEnv):
+class MyEnvTraffic(MetaDriveEnv):
     def __init__(self, config=None):
         super().__init__(config)
         self.prev_steering = 0.0
@@ -14,7 +14,7 @@ class MyEnvNoTraffic(MetaDriveEnv):
 
     @classmethod
     def default_config(cls):
-        config = super(MyEnvNoTraffic, cls).default_config()
+        config = super(MyEnvTraffic, cls).default_config()
 
         # Observation & Action Space
         config["agent_observation"] = LidarStateObservation

@@ -4,7 +4,7 @@ import numpy as np
 from env import MyEnvNoTraffic
 
 # 1) Load the trained model
-model = PPO.load("ppo_dummy_continued.zip")
+model = PPO.load("ComplicatedMapAgent/ppoPeriplokoNoTraf.zip")
 
 config = {"use_render": True,
         "on_continuous_line_done": False,

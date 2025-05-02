@@ -36,7 +36,7 @@ class MyEnvNoTraffic(MetaDriveEnv):
         })
 
         # Traffic & Safety
-        config["traffic_density"] = 0.07
+        config["traffic_density"] = 0.0
         config["accident_prob"] = 0.0
         config["random_agent_model"] = False
         config["random_spawn_lane_index"] = False
