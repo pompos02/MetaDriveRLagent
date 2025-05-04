@@ -1,5 +1,6 @@
 import numpy as np
-import torch
+import torch as th
+import torch.nn as nn
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import (
     BaseCallback,
@@ -11,8 +12,56 @@ from env import MyEnvNoTraffic
 from stable_baselines3.common.vec_env import DummyVecEnv
 from functools import partial
 import logging
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 logging.getLogger().setLevel(logging.ERROR)
 
+class CustomCombinedExtractor(BaseFeaturesExtractor):
+    def __init__(self, observation_space, features_dim=256):
+        # First, initialize the parent class with the observation space and features dim
+        super().__init__(observation_space, features_dim=features_dim)
+        
+        # Extract image space and state space
+        image_shape = observation_space["image"].shape
+        state_shape = observation_space["state"].shape[0]
+
+        # Initialize CNN
+        self.cnn = nn.Sequential(
+            nn.Conv2d(in_channels=image_shape[2], out_channels=32, kernel_size=8, stride=4),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, kernel_size=4, stride=2),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, stride=1),
+            nn.ReLU(),
+            nn.Flatten()
+        )
+
+        # Compute output size of CNN
+        with th.no_grad():
+            dummy_input = th.as_tensor(observation_space["image"].sample()[None]).float()
+            cnn_out_size = self.cnn(dummy_input.permute(0, 3, 1, 2)).shape[1]
+
+        # Initialize state network
+        self.state_net = nn.Sequential(
+            nn.Linear(state_shape, 64),
+            nn.ReLU()
+        )
+
+        # Calculate combined size
+        combined_size = cnn_out_size + 64
+        
+        # Initialize final linear layer to output the desired features_dim
+        self.linear = nn.Sequential(
+            nn.Linear(combined_size, features_dim),
+            nn.ReLU()
+        )
+
+    def forward(self, observations):
+        image = observations["image"].permute(0, 3, 1, 2).float()  # NHWC -> NCHW
+        state = observations["state"].float()
+        image_out = self.cnn(image)
+        state_out = self.state_net(state)
+        return self.linear(th.cat([image_out, state_out], dim=1))
+    
 class CustomMetricsCallback(BaseCallback):
     def __init__(self, verbose=0):
         super().__init__(verbose)
@@ -100,22 +149,26 @@ if __name__ == "__main__":
     # Create a single environment running in the main process
     num_envs = 1
     print("Creating DummyVecEnv...")
-    env = DummyVecEnv([
-        make_env(seed=i) for i in range(num_envs)
-    ])
-    print("DummyVecEnv created.")
+    env = MyEnvNoTraffic()  # Use DummyVecEnv to wrap the environment
+    obs, info= env.reset()  # VecEnv reset() returns just observations, not a tuple
+    print("Initial observation keys:", obs.keys())
+    print("Type of obs:", type(obs))
+    print("Image shape:", obs["image"].shape)
+    print("State shape:", obs["state"].shape)
+    print("Image dtype:", obs["image"].dtype)
+    print("State dtype:", obs["state"].dtype)
+
 
     policy_kwargs = dict(
-        net_arch=[256, 256],
-        activation_fn=torch.nn.ReLU,
-        #log_std_init = -2.0 
+        features_extractor_class=CustomCombinedExtractor,
+        features_extractor_kwargs=dict(features_dim=256),
     )
 
     model_verbose_level = 1 # Set to 1 or 2 for more SB3 output
 
     print("Creating PPO model...")
     model = PPO(
-        policy="MlpPolicy",
+        policy="MultiInputPolicy",
         policy_kwargs=policy_kwargs,
         env=env,
         verbose=model_verbose_level, # Increased verbosity

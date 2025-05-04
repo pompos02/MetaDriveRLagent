@@ -1,6 +1,8 @@
 import gymnasium as gym
 from metadrive.envs import MetaDriveEnv
-from metadrive.obs.state_obs import LidarStateObservation
+from metadrive.obs.image_obs import ImageStateObservation
+from metadrive.component.sensors.rgb_camera import RGBCamera
+from metadrive.component.sensors.depth_camera import DepthCamera
 from metadrive.component.map.base_map import BaseMap
 from metadrive.component.map.pg_map import parse_map_config, MapGenerateMethod
 import numpy as np
@@ -11,15 +13,18 @@ class MyEnvNoTraffic(MetaDriveEnv):
         self.prev_steering = 0.0
         self.prev_throttle = 0.0
         self.target_speed = 75.0  # km/h
+        
 
     @classmethod
     def default_config(cls):
         config = super(MyEnvNoTraffic, cls).default_config()
-
+        sensor_size = (80,60) 
         # Observation & Action Space
-        config["agent_observation"] = LidarStateObservation
+        config["agent_observation"] = ImageStateObservation
         config["discrete_action"] = False
         config["use_multi_discrete"] = False
+        config["image_observation"] = True  
+
 
         # Map Configuration
         config["map"] = "SSSSCSSXCSSCCCCCCSCSSCCCSSSSSSSCSSSSSSSCSSS"
@@ -36,16 +41,19 @@ class MyEnvNoTraffic(MetaDriveEnv):
         })
 
         # Traffic & Safety
-        config["traffic_density"] = 0.07
+        config["traffic_density"] = 0.0
         config["accident_prob"] = 0.0
         config["random_agent_model"] = False
         config["random_spawn_lane_index"] = False
 
         # Vehicle Sensors
+        config["sensors"].update({
+            "rgb": (RGBCamera, *(sensor_size)), # Sensor type and dimensions (W, H)
+        })
+
+        # Configure vehicle-specific settings, including which sensor to use for image obs
         config["vehicle_config"].update({
-            "lidar": {"num_lasers": 72, "distance": 50},
-            "side_detector": {"num_lasers": 20, "distance": 5},
-            "lane_line_detector": {"num_lasers": 20, "distance": 5},
+            "image_source": "rgb", 
         })
 
         # Reward Parameters
