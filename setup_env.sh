@@ -4,13 +4,11 @@
 set -e
 
 # Create the conda environment
-conda create -n 1stProject4228 python=3.10 -y
+conda create -n test1 python=3.10 -y
 
 # Initialize conda for non-interactive use
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
-# Activate the environment
-conda activate 1stProject4228
 
 # Install metadrive in editable mode
 cd metadrive

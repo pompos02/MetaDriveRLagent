@@ -1,7 +1,7 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
 import numpy as np
-from StraightRoadAgent.environmentStraight import StraightEnv
+from environmentStraight import StraightEnv
 
 # 1) Load the trained model
 model = PPO.load("ppo_straight.zip")

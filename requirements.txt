@@ -54,7 +54,6 @@ matplotlib==3.10.1
 mdurl==0.1.2
 mediapy==1.2.2
 metadir==0.0.2
--e git+ssh://git@github.com/pompos02/MetaDriveRLagent.git@e2f9ee70de212c5d50aaeeb3dac9987711f88832#egg=metadrive_simulator&subdirectory=metadrive
 metaform==1.0.2.4
 metatype==0.1.3.7
 metawiki==0.1.13

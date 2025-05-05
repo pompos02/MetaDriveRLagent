@@ -817,6 +817,26 @@ metadrive/render_pipeline/rpplugins/env_probes/environment_capture_stage.py
 metadrive/render_pipeline/rpplugins/env_probes/environment_probe.py
 metadrive/render_pipeline/rpplugins/env_probes/plugin.py
 metadrive/render_pipeline/rpplugins/env_probes/probe_manager.py
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/__init__.py
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/apply_envprobes.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/cull_probes.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/filter_cubemap.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/filter_cubemap_diffuse.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/generate_mip_shaders.py
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/store_cubemap.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/store_cubemap_diffuse.frag.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/0.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/1.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/10.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/11.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/2.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/3.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/4.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/5.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/6.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/7.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/8.autogen.glsl
+metadrive/render_pipeline/rpplugins/env_probes 2/shader/mips/9.autogen.glsl
 metadrive/render_pipeline/rpplugins/env_probes/shader/__init__.py
 metadrive/render_pipeline/rpplugins/env_probes/shader/apply_envprobes.frag.glsl
 metadrive/render_pipeline/rpplugins/env_probes/shader/cull_probes.frag.glsl
@@ -841,11 +861,15 @@ metadrive/render_pipeline/rpplugins/forward_shading/__init__.py
 metadrive/render_pipeline/rpplugins/forward_shading/config.yaml
 metadrive/render_pipeline/rpplugins/forward_shading/forward_stage.py
 metadrive/render_pipeline/rpplugins/forward_shading/plugin.py
+metadrive/render_pipeline/rpplugins/forward_shading 2/shader/merge_with_deferred.frag.glsl
 metadrive/render_pipeline/rpplugins/forward_shading/shader/merge_with_deferred.frag.glsl
 metadrive/render_pipeline/rpplugins/fxaa/__init__.py
 metadrive/render_pipeline/rpplugins/fxaa/config.yaml
 metadrive/render_pipeline/rpplugins/fxaa/fxaa_stage.py
 metadrive/render_pipeline/rpplugins/fxaa/plugin.py
+metadrive/render_pipeline/rpplugins/fxaa 2/shader/FXAA.inc.glsl
+metadrive/render_pipeline/rpplugins/fxaa 2/shader/fxaa_stage.frag.glsl
+metadrive/render_pipeline/rpplugins/fxaa 2/shader/write_luma.frag.glsl
 metadrive/render_pipeline/rpplugins/fxaa/shader/FXAA.inc.glsl
 metadrive/render_pipeline/rpplugins/fxaa/shader/fxaa_stage.frag.glsl
 metadrive/render_pipeline/rpplugins/fxaa/shader/write_luma.frag.glsl
@@ -864,6 +888,8 @@ metadrive/render_pipeline/rpplugins/plugin_prefab/__init__.py
 metadrive/render_pipeline/rpplugins/plugin_prefab/config.yaml
 metadrive/render_pipeline/rpplugins/plugin_prefab/demo_stage.py
 metadrive/render_pipeline/rpplugins/plugin_prefab/plugin.py
+metadrive/render_pipeline/rpplugins/plugin_prefab 2/resources/README.txt
+metadrive/render_pipeline/rpplugins/plugin_prefab 2/shader/README.txt
 metadrive/render_pipeline/rpplugins/plugin_prefab/resources/README.txt
 metadrive/render_pipeline/rpplugins/plugin_prefab/shader/README.txt
 metadrive/render_pipeline/rpplugins/pssm/__init__.py
@@ -873,6 +899,11 @@ metadrive/render_pipeline/rpplugins/pssm/pssm_dist_shadow_stage.py
 metadrive/render_pipeline/rpplugins/pssm/pssm_scene_shadow_stage.py
 metadrive/render_pipeline/rpplugins/pssm/pssm_shadow_stage.py
 metadrive/render_pipeline/rpplugins/pssm/pssm_stage.py
+metadrive/render_pipeline/rpplugins/pssm 2/shader/apply_sun_shading.frag.glsl
+metadrive/render_pipeline/rpplugins/pssm 2/shader/blur_esm.frag.glsl
+metadrive/render_pipeline/rpplugins/pssm 2/shader/convert_to_esm.frag.glsl
+metadrive/render_pipeline/rpplugins/pssm 2/shader/filter_pssm.inc.glsl
+metadrive/render_pipeline/rpplugins/pssm 2/shader/filter_pssm_shadows.frag.glsl
 metadrive/render_pipeline/rpplugins/pssm/shader/apply_sun_shading.frag.glsl
 metadrive/render_pipeline/rpplugins/pssm/shader/blur_esm.frag.glsl
 metadrive/render_pipeline/rpplugins/pssm/shader/convert_to_esm.frag.glsl
@@ -885,6 +916,32 @@ metadrive/render_pipeline/rpplugins/scattering/plugin.py
 metadrive/render_pipeline/rpplugins/scattering/scattering_envmap_stage.py
 metadrive/render_pipeline/rpplugins/scattering/scattering_methods.py
 metadrive/render_pipeline/rpplugins/scattering/scattering_stage.py
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/.gitignore
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/README.md
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/__init__.py
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/config.ini
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/generate_table.py
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/update_module_builder.py
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/ArHosekSkyModel.cpp
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/ArHosekSkyModel.h
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/ArHosekSkyModelData_CIEXYZ.data
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/ArHosekSkyModelData_RGB.data
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/config_module.cpp
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/config_module.h
+metadrive/render_pipeline/rpplugins/scattering 2/resources/hosek_wilkie_scattering/source/main.h
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/add_delta_e.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/add_delta_sr.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/compute_scattering.inc.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/copy_inscatter.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/copy_irradiance.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/delta_e.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/delta_j.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/delta_sm_sr.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/delta_sr.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/irradiance_n.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/scattering_common.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/eric_bruneton/transmittance.compute.glsl
+metadrive/render_pipeline/rpplugins/scattering 2/shader/hosek_wilkie/compute_scattering.inc.glsl
 metadrive/render_pipeline/rpplugins/scattering/resources/__init__.py
 metadrive/render_pipeline/rpplugins/scattering/resources/hosek_wilkie_scattering/.gitignore
 metadrive/render_pipeline/rpplugins/scattering/resources/hosek_wilkie_scattering/README.md
@@ -937,6 +994,14 @@ metadrive/render_pipeline/rpplugins/smaa/config.yaml
 metadrive/render_pipeline/rpplugins/smaa/jitters.py
 metadrive/render_pipeline/rpplugins/smaa/plugin.py
 metadrive/render_pipeline/rpplugins/smaa/smaa_stage.py
+metadrive/render_pipeline/rpplugins/smaa 2/resources/area_tex.png
+metadrive/render_pipeline/rpplugins/smaa 2/resources/search_tex.png
+metadrive/render_pipeline/rpplugins/smaa 2/shader/SMAA.inc.glsl
+metadrive/render_pipeline/rpplugins/smaa 2/shader/blending_weights.frag.glsl
+metadrive/render_pipeline/rpplugins/smaa 2/shader/edge_detection.frag.glsl
+metadrive/render_pipeline/rpplugins/smaa 2/shader/neighborhood_blending.frag.glsl
+metadrive/render_pipeline/rpplugins/smaa 2/shader/resolve_smaa.frag.glsl
+metadrive/render_pipeline/rpplugins/smaa 2/shader/smaa_wrapper.inc.glsl
 metadrive/render_pipeline/rpplugins/smaa/resources/area_tex.png
 metadrive/render_pipeline/rpplugins/smaa/resources/search_tex.png
 metadrive/render_pipeline/rpplugins/smaa/shader/SMAA.inc.glsl
@@ -949,6 +1014,11 @@ metadrive/render_pipeline/rpplugins/ssr/__init__.py
 metadrive/render_pipeline/rpplugins/ssr/config.yaml
 metadrive/render_pipeline/rpplugins/ssr/plugin.py
 metadrive/render_pipeline/rpplugins/ssr/ssr_stage.py
+metadrive/render_pipeline/rpplugins/ssr 2/shader/reflection_velocity.frag.glsl
+metadrive/render_pipeline/rpplugins/ssr 2/shader/reproject_lighting.frag.glsl
+metadrive/render_pipeline/rpplugins/ssr 2/shader/resolve_ssr.frag.glsl
+metadrive/render_pipeline/rpplugins/ssr 2/shader/ssr_trace.frag.glsl
+metadrive/render_pipeline/rpplugins/ssr 2/shader/upscale_bilateral_brdf.frag.glsl
 metadrive/render_pipeline/rpplugins/ssr/shader/reflection_velocity.frag.glsl
 metadrive/render_pipeline/rpplugins/ssr/shader/reproject_lighting.frag.glsl
 metadrive/render_pipeline/rpplugins/ssr/shader/resolve_ssr.frag.glsl
@@ -971,6 +1041,79 @@ metadrive/render_pipeline/rpplugins/vxgi/shader/resolve_vxgi.frag.glsl
 metadrive/render_pipeline/rpplugins/vxgi/shader/vxgi.inc.glsl
 metadrive/render_pipeline/rpplugins/vxgi/shader/vxgi_diffuse.frag.glsl
 metadrive/render_pipeline/rpplugins/vxgi/shader/vxgi_specular.frag.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/convolute.frag.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/copy_cubemap.frag.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/default.vert.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/display.frag.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/display.vert.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/first-bounce.frag.glsl
+metadrive/render_pipeline/toolkit 2/bake_gi/resources/first-bounce.vert.glsl
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/__init__.py
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/compile_ui_qt4.bat
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/compile_ui_qt5.bat
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/main_window.ui
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/main_window_generated.py
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/point_insert.ui
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/point_insert_dialog_generated.py
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/resources.qrc
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/resources_rc.py
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/0_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/12_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/16_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/20_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/4_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/8_00.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/daytime_editor_logo.png
+metadrive/render_pipeline/toolkit 2/day_time_editor/ui/res/icon.png
+metadrive/render_pipeline/toolkit 2/material_editor/ui/checked.png
+metadrive/render_pipeline/toolkit 2/material_editor/ui/compile_ui_qt4.bat
+metadrive/render_pipeline/toolkit 2/material_editor/ui/compile_ui_qt5.bat
+metadrive/render_pipeline/toolkit 2/material_editor/ui/down-arrow.png
+metadrive/render_pipeline/toolkit 2/material_editor/ui/main_window.ui
+metadrive/render_pipeline/toolkit 2/material_editor/ui/main_window_generated.py
+metadrive/render_pipeline/toolkit 2/material_editor/ui/resources.qrc
+metadrive/render_pipeline/toolkit 2/material_editor/ui/resources_rc.py
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/daytime.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/debugging.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/panda3d-config.prc
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/pipeline.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/plugins.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/stages.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/config/task-scheduler.yaml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/overlay.png
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/scene.templ.xml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/scene.xml
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/sphere.bam
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/convert_cubemap.py
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/empty_basecolor.png
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/empty_normal.png
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/empty_roughness.png
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/empty_specular.png
+metadrive/render_pipeline/toolkit 2/pathtracing_reference/res/tex/white.png
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/__init__.py
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/compile_ui_qt4.bat
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/compile_ui_qt5.bat
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/main_window.ui
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/main_window_generated.py
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/resources.qrc
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/resources_rc.py
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/res/icon.png
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/res/pipeline_logo.png
+metadrive/render_pipeline/toolkit 2/plugin_configurator/ui/res/plugin_configurator_logo.png
+metadrive/render_pipeline/toolkit 2/poisson_disk_generator/source/PoissonDiskGenerator.h
+metadrive/render_pipeline/toolkit 2/render_service/config/daytime.yaml
+metadrive/render_pipeline/toolkit 2/render_service/config/debugging.yaml
+metadrive/render_pipeline/toolkit 2/render_service/config/panda3d-config.prc
+metadrive/render_pipeline/toolkit 2/render_service/config/pipeline.yaml
+metadrive/render_pipeline/toolkit 2/render_service/config/plugins.yaml
+metadrive/render_pipeline/toolkit 2/render_service/config/stages.yaml
+metadrive/render_pipeline/toolkit 2/render_service/config/task-scheduler.yaml
+metadrive/render_pipeline/toolkit 2/render_service/resources/preview.bam
+metadrive/render_pipeline/toolkit 2/render_service/resources/sphere.bam
+metadrive/render_pipeline/toolkit 2/render_service/resources/tex/empty_basecolor.png
+metadrive/render_pipeline/toolkit 2/render_service/resources/tex/empty_normal.png
+metadrive/render_pipeline/toolkit 2/render_service/resources/tex/empty_roughness.png
+metadrive/render_pipeline/toolkit 2/render_service/resources/tex/empty_specular.png
 metadrive/render_pipeline/toolkit/bake_gi/bake.py
 metadrive/render_pipeline/toolkit/bake_gi/display.py
 metadrive/render_pipeline/toolkit/bake_gi/resources/convolute.frag.glsl
@@ -1291,6 +1434,27 @@ metadrive/third_party/kitsunetsuki/base/objects.py
 metadrive/third_party/kitsunetsuki/base/vertex.py
 metadrive/third_party/kitsunetsuki/cardmaker/__init__.py
 metadrive/third_party/kitsunetsuki/exporter/__init__.py
+metadrive/third_party/kitsunetsuki/exporter 2/base/__init__.py
+metadrive/third_party/kitsunetsuki/exporter 2/base/geom.py
+metadrive/third_party/kitsunetsuki/exporter 2/base/material.py
+metadrive/third_party/kitsunetsuki/exporter 2/base/texture.py
+metadrive/third_party/kitsunetsuki/exporter 2/base/vertex.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/__init__.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/animation.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/geom.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/material.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/texture.py
+metadrive/third_party/kitsunetsuki/exporter 2/egg/vertex.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/__init__.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/animation.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/buffer.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/geom.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/material.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/spec.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/texture.py
+metadrive/third_party/kitsunetsuki/exporter 2/gltf/vertex.py
+metadrive/third_party/kitsunetsuki/exporter 2/vrm/__init__.py
+metadrive/third_party/kitsunetsuki/exporter 2/vrm/armature.py
 metadrive/third_party/kitsunetsuki/exporter/base/__init__.py
 metadrive/third_party/kitsunetsuki/exporter/base/geom.py
 metadrive/third_party/kitsunetsuki/exporter/base/material.py
