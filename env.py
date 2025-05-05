@@ -24,8 +24,6 @@ class MyEnvNoTraffic(MetaDriveEnv):
         config["discrete_action"] = False
         config["use_multi_discrete"] = False
         config["image_observation"] = True  
-
-
         # Map Configuration
         config["map"] = "SSSSCSSXCSSCCCCCCSCSSCCCSSSSSSSCSSSSSSSCSSS"
         config["start_seed"] = 0
@@ -50,6 +48,7 @@ class MyEnvNoTraffic(MetaDriveEnv):
         config["sensors"].update({
             "rgb": (RGBCamera, *(sensor_size)), # Sensor type and dimensions (W, H)
         })
+        
 
         # Configure vehicle-specific settings, including which sensor to use for image obs
         config["vehicle_config"].update({
