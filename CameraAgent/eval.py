@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # Import the correct ActorCritic from test.py
-from test import ActorCritic
+from train import ActorCritic
 from env import MyEnvNoTraffic
 import cv2
 def evaluate_model(model_path, num_episodes=3):

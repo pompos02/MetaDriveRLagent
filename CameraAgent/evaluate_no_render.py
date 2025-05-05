@@ -3,7 +3,7 @@ import numpy as np
 import gymnasium as gym
 import os 
 
-from test import ActorCritic
+from train import ActorCritic
 from env import MyEnvNoTraffic
 
 def evaluate_model(model_path, num_episodes=100):
