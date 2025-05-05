@@ -38,6 +38,8 @@ All experiments mentioned are those discussed throughout the project.
 1. `python {experiment_name}/eval.py`, if you want rendering
 2. `python {experiment_name}/eval_no_render.py`, if you don't want rendering
 
+
+
 ## Initial Implementation
 
 First, we studied the MetaDrive framework structure, leading to the creation of a customized environment class that inherits from MetaDrive's default environment. In this custom environment, specialized parameters were defined including configuration, reward functions, and sensors (Lidar (72), Side detector (20), lane line detector (20)) to meet specific training requirements.
@@ -63,8 +65,11 @@ The agent's reward function was initially designed with simplicity, incorporatin
 Reward_speed = SpeedReward × (vehicle.speed / vehicle.max_speed)
 ```
 ![Training Example](media/output.gif)
+
 Initial Agent at 10,000 steps
+
 ![Training Example](media/firstAfter.gif)
+
 agent at  2,000,000 steps
 
 
@@ -77,7 +82,10 @@ Reward_driving = d × StepDistance × positiveRoad
 ```
 
 Where parameters `d` and `positiveRoad` correspond to reward weight coefficients and the indication of whether the vehicle is moving on the correct side of the road, respectively.
+
+
 ![Training Example](media/ppo_straight_sss_FastStraightNo.gif)
+
 Updated agent after 3,000,000 steps
 
 
@@ -87,8 +95,14 @@ Updated agent after 3,000,000 steps
 Next, the road geography was changed by adding two turns. Training a new agent with the same reward function architecture yielded interesting results. During training, the average reward was approximately 700, indicating that the agent completed the map. However, in evaluation where action selection is deterministic (the model selects the "most likely" action), the car repeatedly crashed at the first turn.
 
 Further analysis revealed that during training, the agent reached a maximum speed of about 30 km/h, while in evaluation it reached up to 80 km/h. This is due to the PPO architecture's stochastic nature—the agent makes steering adjustments for exploration purposes. Due to friction, these continuous micro-corrections limit its speed. To reduce this difference between training and evaluation, the standard deviation (stochasticity) of the policy during training was reduced, making the model behave more similarly in both phases.
+
+
 ![Training Example](media/Corners.gif)
+
+
 ![alt text](media/image.png)
+
+
 Updated agent after 3,000,000 steps
 
 ## PyTorch Implementation
@@ -123,6 +137,7 @@ Results were considerably worse compared to the Baseline3 implementation, likely
 
 ![Training Example](media/FirstPyTorch.gif)
 ![Training Example](media/image.png)
+
 Updated agent after 3,000,000 steps
 
 After extensive study and experimentation with different hyperparameters and reward functions, the results remained similar. Due to inability to identify the cause of instability, the training logic was revised with the following major changes:
@@ -184,9 +199,12 @@ Due to the complexity of the track, there was a need to redesign the reward func
 The difficulty increased significantly with traffic and the complex track. For this reason, other cars were removed so the agent could learn the track without traffic.
 ![](media/PeriplokoNo1.gif)
 ![alt text](media/image-4.png)
+
 Due to the previously defined reward function, the car maintained the first lane and moved at 40km/h. Training was repeated by removing R₁ and R₃, allowing the agent to move freely on the track.
+
 ![](media/PeriplokoFast.gif)
 ![alt text](media/image-5.png)
+
 The agent moved more dangerously in the second implementation, as evidenced by the Success rate, but completed the track much faster as shown in the Average steps for successful episodes.
 
 
