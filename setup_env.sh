@@ -6,7 +6,6 @@ set -e
 # Initialize conda
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
-# Avoid numeric names: 'proj_4228' instead of '1stProject4228'
 ENV_NAME="proj_4228"
 
 # Create the conda environment
