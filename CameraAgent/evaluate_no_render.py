@@ -128,7 +128,7 @@ def evaluate_model(model_path, num_episodes=100):
 
 if __name__ == "__main__":
 
-    MODEL_PATH = "ppo_final_model.pth"  
+    MODEL_PATH = "CameraAgent/ppo_final_model.pth"  
 
     NUM_EVAL_EPISODES = 100
 

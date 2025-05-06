@@ -67,7 +67,7 @@ class MyEnvNoTraffic(MetaDriveEnv):
             "crash_vehicle_done": False,
             "crash_object_done": False,
             "out_of_road_done": True,
-            "on_continuous_line_done": True,
+            "on_continuous_line_done": False,
             "horizon": 10_000,
         })
 

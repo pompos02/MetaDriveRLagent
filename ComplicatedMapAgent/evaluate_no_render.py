@@ -4,7 +4,7 @@ import numpy as np
 from env import MyEnvNoTraffic
 
 # 1) Load the trained model
-model = PPO.load("ppoPeriplokoNoTraf.zip")
+model = PPO.load("ComplicatedMapAgent/ppoPeriplokoNoTraf.zip")
 
 env = MyEnvNoTraffic()
 
