@@ -2,7 +2,6 @@ import torch
 import numpy as np
 import time
 
-# Make sure this matches your training code
 from train import ActorCritic
 from environmentStraightCorner import StraightCornerEnv
 
@@ -22,7 +21,6 @@ def evaluate_model(model_path, num_episodes=3):
     policy.load_state_dict(torch.load(model_path))
     policy.eval()  
 
-    # === 3) Run episodes ===
     for episode_idx in range(1, num_episodes + 1):
 
         obs_tuple = env.reset()
@@ -53,14 +51,12 @@ def evaluate_model(model_path, num_episodes=3):
             if has_failed:
                 print("Agent failed (crash or out of road). Ending episode.")
                 break
-            # Update obs
             obs = next_obs
             
 
         print(f"Episode {episode_idx} finished in {ep_steps} steps "
                 f"with total reward {ep_reward:.2f} and route completion {route_completion:.2f}")
 
-    # === 4) Done, close environment ===
     env.close()
 
 

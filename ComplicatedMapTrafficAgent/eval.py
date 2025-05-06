@@ -3,7 +3,6 @@ from stable_baselines3 import PPO
 import numpy as np
 from env import MyEnvTraffic
 
-# 1) Load the trained model
 model = PPO.load("ComplicatedMapTrafficAgent/ppo_continued.zip")
 
 config = {"use_render": True,
@@ -14,7 +13,6 @@ env = MyEnvTraffic(config)
 
 obs, info = env.reset()
 
-# 3) Run a few episodes
 num_episodes = 3
 for ep in range(num_episodes):
     print(f"Episode {ep+1} ==================================")

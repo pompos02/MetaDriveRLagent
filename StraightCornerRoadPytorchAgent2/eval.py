@@ -7,7 +7,6 @@ import typing
 import time
 from metadrive.envs import MetaDriveEnv
 
-# Define the Actor network
 class Actor(nn.Module):
     def __init__(self):
         super().__init__()
@@ -42,9 +41,7 @@ class NNPolicy:
         return throttle.item(), steering.item()
 
 def evaluate_policy(env_config, policy, num_episodes=5, render=True, verbose=True):
-    """
-    Evaluate a policy in the MetaDrive environment
-    """
+
     env = MetaDriveEnv(env_config)
     total_rewards = []
     
@@ -76,15 +73,12 @@ def evaluate_policy(env_config, policy, num_episodes=5, render=True, verbose=Tru
                 # For visualization
                 if render:
                     env.render()
-                    # Add small delay to make visualization smoother
-                    time.sleep(0.01)
             
             total_rewards.append(episode_reward)
             if verbose:
                 print(f"Episode {episode+1} finished after {step} steps with reward: {episode_reward:.2f}")
     
     finally:
-        # Always close the environment properly
         env.close()
     
     return total_rewards
@@ -92,17 +86,14 @@ def evaluate_policy(env_config, policy, num_episodes=5, render=True, verbose=Tru
 if __name__ == "__main__":
     print("Loading trained PPO models...")
     
-    # Set device (use GPU if available)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    log_dir = "runs/PPO_MetaDrive_DecayExplore_v1" # Choose a version/name
+    log_dir = "runs/PPO_MetaDrive_DecayExplore_v1" 
     
-    # Create the actor network and load weights
     actor = Actor().to(device)
     actor.load_state_dict(torch.load("StraightCornerRoadPytorchAgent2/ppo_actor_model.pt", map_location=device))
-    actor.eval()  # Set to evaluation mode
+    actor.eval()  
     
-    # Create policy wrapper
     policy = NNPolicy(actor)
     
     # Environment configuration for evaluation

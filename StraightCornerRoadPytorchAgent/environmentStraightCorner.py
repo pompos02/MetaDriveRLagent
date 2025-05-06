@@ -12,15 +12,12 @@ class StraightCornerEnv(MetaDriveEnv):
     def default_config(cls):
         config = super(StraightCornerEnv, cls).default_config()
 
-        # Use your LidarStateObservation (or StateObservation)
         config["agent_observation"] = LidarStateObservation
 
         config["map"] = "SSSCSSSSC"
 
-        # Example: no traffic
         config["traffic_density"] = 0.0
 
-        # Example: no random agent shape
         config["random_agent_model"] = False
 
         # Use continuous action
@@ -32,7 +29,7 @@ class StraightCornerEnv(MetaDriveEnv):
         # map config
         config["map_config"].update({
             BaseMap.GENERATE_TYPE: MapGenerateMethod.BIG_BLOCK_NUM,
-            BaseMap.GENERATE_CONFIG: None,  # it can be a file path / block num / block ID sequence
+            BaseMap.GENERATE_CONFIG: None,  
             BaseMap.LANE_WIDTH: 3.5,
             BaseMap.LANE_NUM: 4,
             "exit_length": 50,
@@ -148,8 +145,6 @@ class StraightCornerEnv(MetaDriveEnv):
         elif vehicle.crash_sidewalk:
             reward += -self.config["crash_sidewalk_penalty"]
         step_info["route_completion"] = vehicle.navigation.route_completion
-
-        # === Termination condition flags ===
 
         out_of_road = self._is_out_of_road(vehicle)
         crash_vehicle = vehicle.crash_vehicle

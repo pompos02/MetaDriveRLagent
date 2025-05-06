@@ -10,9 +10,8 @@ from torch.utils.tensorboard import SummaryWriter # Added
 from environmentStraightCorner import StraightCornerEnv
 
 
-# --- Checkpoint Saving Function (Corrected) ---
-def save_checkpoint(step, policy, optimizer, episode_count, save_dir): # Added episode_count and save_dir
-    """Saves model and optimizer state."""
+# Checkpoint Saving Function  
+def save_checkpoint(step, policy, optimizer, episode_count, save_dir):
     os.makedirs(save_dir, exist_ok=True)
     checkpoint = {
         "step": step,
@@ -23,11 +22,8 @@ def save_checkpoint(step, policy, optimizer, episode_count, save_dir): # Added e
     ckpt_path = os.path.join(save_dir, f"ppo_checkpoint_step_{step}.pt")
     torch.save(checkpoint, ckpt_path)
     print(f"\n💾 Checkpoint saved at step {step} to {ckpt_path}")
-# --------------------------------------------
 
-# --- Actor-Critic Network ---
 class ActorCritic(nn.Module):
-    """PPO Actor-Critic Network."""
     def __init__(self, obs_dim, action_dim, hidden_sizes=(256, 256), log_std_init=-0.5):
         super().__init__()
         self.shared = nn.Sequential(
@@ -44,7 +40,6 @@ class ActorCritic(nn.Module):
         self.v_head = nn.Linear(hidden_sizes[1], 1)
 
     def forward(self, x):
-        """Forward pass returning action mean, std dev, and value."""
         features = self.shared(x)
         mu = self.mu_head(features)
         std = torch.exp(self.log_std)
@@ -52,17 +47,13 @@ class ActorCritic(nn.Module):
         return mu, std, value
 
     def act(self, obs):
-        """Sample action, calculate log probability, return value."""
         mu, std, value = self.forward(obs)
         dist = Normal(mu, std)
         action = dist.sample()
         log_prob = dist.log_prob(action).sum(axis=-1) # Sum across action dimensions
         return action, log_prob, value # Return value tensor
-# --------------------------
 
-# --- Rollout Buffer (Corrected) ---
 class RolloutBuffer:
-    """Stores trajectory data and calculates GAE and returns."""
     def __init__(self, size, obs_dim, act_dim, gamma=0.99, lam=0.95):
         self.size = size
         self.gamma = gamma
@@ -79,7 +70,6 @@ class RolloutBuffer:
         self.ret_buf = torch.zeros(size, dtype=torch.float32)
 
     def store(self, obs, act, logp, rew, val):
-        """Stores one step of experience."""
         if self.ptr >= self.size:
             print("Warning: RolloutBuffer overflow!")
             return
@@ -91,7 +81,6 @@ class RolloutBuffer:
         self.ptr += 1
 
     def _discount_cumsum_torch(self, x, discount):
-        """Efficient O(N) discounted cumulative sum for 1D tensors."""
         vals = torch.zeros_like(x)
         running_add = 0.0
         for t in reversed(range(x.shape[0])):
@@ -100,8 +89,7 @@ class RolloutBuffer:
         return vals
 
     def finish_path(self, last_val=0.0):
-        """Calculates GAE and returns for the current trajectory segment."""
-        if self.ptr == self.start_ptr:  # No new transitions since the last finish
+        if self.ptr == self.start_ptr:  
             return
         path_slice = slice(self.start_ptr, self.ptr)
         # Ensure last_val is a tensor for concatenation
@@ -121,15 +109,14 @@ class RolloutBuffer:
         self.start_ptr = self.ptr
 
     def get(self):
-        """Retrieves collected data, normalizes advantages, and resets pointer."""
         if self.ptr == 0:
-             print("Warning: RolloutBuffer.get() called with ptr=0")
-             # Return empty tensors with correct dimensions
-             return (torch.zeros((0, self.obs_buf.shape[1])),
-                     torch.zeros((0, self.act_buf.shape[1])),
-                     torch.zeros(0),
-                     torch.zeros(0),
-                     torch.zeros(0))
+            print("Warning: RolloutBuffer.get() called with ptr=0")
+            # Return empty tensors with correct dimensions
+            return (torch.zeros((0, self.obs_buf.shape[1])),
+                    torch.zeros((0, self.act_buf.shape[1])),
+                    torch.zeros(0),
+                    torch.zeros(0),
+                    torch.zeros(0))
 
         # Slice the buffers to get only the collected data up to self.ptr
         obs_batch = self.obs_buf[:self.ptr]
@@ -142,17 +129,13 @@ class RolloutBuffer:
         adv_mean = adv_batch.mean()
         adv_std = adv_batch.std()
         normalized_adv_batch = (adv_batch - adv_mean) / (adv_std + 1e-8)
-        # -------------------------
 
         # Reset pointer *after* slicing and processing
         self.ptr = 0
         return obs_batch, act_batch, logp_batch, normalized_adv_batch, ret_batch
-# -----------------------------------
 
-# --- PPO Update Function (with Logging) ---
 def ppo_update(policy, optimizer, buffer, writer, current_step, clip_ratio=0.2, vf_coef=0.5, ent_coef=0.001, epochs=10, batch_size=256, grad_clip_norm=0.5):
-    """Performs PPO update steps and logs metrics."""
-    obs, act, logp_old, adv, ret = buffer.get() # buffer.get() returns normalized adv
+    obs, act, logp_old, adv, ret = buffer.get()
 
     ret_mean = ret.mean()
     ret_std = ret.std()
@@ -235,9 +218,7 @@ def ppo_update(policy, optimizer, buffer, writer, current_step, clip_ratio=0.2, 
         writer.add_scalar("Update/PolicyStd", std.mean().item(), current_step) # Log avg std dev
         writer.add_scalar("Update/ReturnMean_Raw", ret_mean.item(), current_step)
         writer.add_scalar("Update/ReturnStd_Raw", ret_std.item(), current_step)
-# -----------------------------------------
 
-# === Main Training Function ===
 def train_ppo_with_tensorboard():
     """Main PPO training loop with TensorBoard logging."""
 
@@ -256,11 +237,6 @@ def train_ppo_with_tensorboard():
     checkpoint_every = 100_000 # Save checkpoint every N steps
     log_std_init = -1.0   # Initial log standard deviation for policy
 
-
-
-    # ---------------------
-
-    # 1) Initialize environment
     try:
         env = StraightCornerEnv()
         # Reset environment to get initial observation and info
@@ -276,14 +252,12 @@ def train_ppo_with_tensorboard():
         print(f"Error initializing environment: {e}")
         return
     
-    # 2) Setup policy, optimizer, buffer
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
     policy = ActorCritic(obs_dim, act_dim, log_std_init=log_std_init)
     optimizer = torch.optim.Adam(policy.parameters(), lr=learning_rate)
     buffer = RolloutBuffer(buffer_size, obs_dim, act_dim, gamma=gamma, lam=lam)
 
-    # --- Dynamic Log and Checkpoint Directory ---
     base_log_dir = "./logs/ppo_metadrive_runs" # Base directory for logs
     now = datetime.datetime.now()
     timestamp = now.strftime("%Y%m%d_%H%M%S")
@@ -300,17 +274,11 @@ def train_ppo_with_tensorboard():
     steps_collected = 0 # Total steps collected across all rollouts
     episode_count = 0   # Total completed episodes
 
-    # Initialize TQDM progress bar
-
-
-    # === Main Training Loop ===
     while steps_collected < total_steps:
 
-        # Trackers for the current rollout segment (may span multiple episodes)
         rollout_steps = 0
-        rollout_done = False # Tracks if the *last* step ended the episode
+        rollout_done = False 
 
-        # === Rollout Phase: Collect data until buffer is full ===
         while buffer.ptr < buffer.size:
             # Convert observation to tensor
             obs_tensor = torch.tensor(obs, dtype=torch.float32)
@@ -328,17 +296,16 @@ def train_ppo_with_tensorboard():
                 next_obs_array, reward, terminated, truncated, info = step_output
                 done = terminated or truncated
             except Exception as e:
-                 print(f"\nError during env.step: {e}")
-                 done = True # Treat error as end of episode segment
-                 # Attempt to reset to potentially recover? Or just break?
-                 try:
-                     obs, reset_info = env.reset()
-                     print("Environment reset after step error.")
-                 except Exception as reset_e:
-                     print(f"Error resetting environment after step error: {reset_e}")
-                     writer.close()
-                     env.close()
-                     return # Critical error, exit training
+                print(f"\nError during env.step: {e}")
+                done = True # Treat error as end of episode segment
+                try:
+                    obs, reset_info = env.reset()
+                    print("Environment reset after step error.")
+                except Exception as reset_e:
+                    print(f"Error resetting environment after step error: {reset_e}")
+                    writer.close()
+                    env.close()
+                    return # Critical error, exit training
 
             # Store experience in buffer
             buffer.store(obs_tensor, action.detach(), logp.detach(), reward, val_scalar)
@@ -348,11 +315,9 @@ def train_ppo_with_tensorboard():
             rollout_steps += 1
             rollout_done = done # Store if this step ended an episode
 
-            # --- Handle Episode Termination ---
             if done:
                 episode_count += 1
-                # Extract final info if available
-                ep_ret = info.get("episode_reward", "N/A") # Check common keys
+                ep_ret = info.get("episode_reward", "N/A") 
                 ep_len = info.get("episode_length", "N/A")
                 ep_route_comp = info.get("route_completion", 0.0) # Get route completion specifically
                 success = 1 if terminated and ep_route_comp >= 0.99 else 0
@@ -378,12 +343,10 @@ def train_ppo_with_tensorboard():
                 # If buffer becomes full exactly when episode ends, break inner loop
                 if buffer.ptr == buffer.size:
                     break
-            # ---------------------------------
 
             # Break inner loop if buffer is full
             if buffer.ptr == buffer.size:
                 break
-        # === End of Rollout Phase ===
 
         # Get actual number of steps collected in this rollout
         num_collected_steps = rollout_steps # buffer.ptr should equal rollout_steps here
@@ -398,7 +361,7 @@ def train_ppo_with_tensorboard():
 
         buffer.finish_path(last_val) # Calculate advantages and returns
 
-        # === PPO Update Phase ===
+        # PPO Update Phase 
         if num_collected_steps > 0:
             # Store steps before update for accurate logging/checkpointing
             steps_before_update = steps_collected
@@ -406,46 +369,34 @@ def train_ppo_with_tensorboard():
             ppo_update(policy, optimizer, buffer, writer, steps_before_update,
                        clip_ratio=ppo_clip_ratio, vf_coef=vf_coef, ent_coef=ent_coef,
                        epochs=ppo_epochs, batch_size=ppo_batch_size, grad_clip_norm=grad_clip_norm)
-            # buffer.get() inside ppo_update resets buffer.ptr to 0
 
-            # Update total steps collected and progress bar
             steps_collected += num_collected_steps
         else:
-            # This case should ideally not happen if the loop logic is correct
             print("Warning: Skipping PPO update as no steps were collected in this rollout.")
 
         # Log total steps collected vs wall time (default x-axis)
         writer.add_scalar("Training/TotalStepsCollected", steps_collected, steps_collected)
 
-        # === Checkpoint Phase (Corrected Logic) ===
         current_checkpoint_interval = steps_collected // checkpoint_every
         previous_checkpoint_interval = steps_before_update // checkpoint_every
         if current_checkpoint_interval > previous_checkpoint_interval:
             save_checkpoint(steps_collected, policy, optimizer, episode_count, checkpoint_save_dir)
-        # ------------------------------------------
 
-    # === End of Training Loop ===
 
-    # --- Final Model Saving ---
     final_model_path = os.path.join(run_log_dir, "ppo_final_model.pth")
     try:
         torch.save(policy.state_dict(), final_model_path)
-        print(f"\n✅ Final model saved to {final_model_path}")
+        print(f"\nFinal model saved to {final_model_path}")
     except Exception as e:
         print(f"\nError saving final model: {e}")
 
-    # --- Cleanup ---
     writer.close() # Close TensorBoard writer
     env.close() # Close the environment cleanly
     print("\nTraining finished.")
-# ============================
 
 if __name__ == "__main__":
-    # Set a seed for reproducibility (optional but recommended)
     seed = 42
     torch.manual_seed(seed)
-    # np.random.seed(seed) # If using numpy randomness elsewhere
-    # random.seed(seed) # If using stdlib random
 
     print("Starting PPO training...")
     train_ppo_with_tensorboard()

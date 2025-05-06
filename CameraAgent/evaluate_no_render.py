@@ -19,7 +19,7 @@ def evaluate_model(model_path, num_episodes=100):
     try:
         obs_space = env.observation_space
         if not isinstance(obs_space, gym.spaces.Dict):
-             raise TypeError(f"Expected observation space to be a Dict, but got {type(obs_space)}")
+            raise TypeError(f"Expected observation space to be a Dict, but got {type(obs_space)}")
 
         img_shape = obs_space['image'].shape # Should be (H, W, C, T)
         state_dim = obs_space['state'].shape[0]
@@ -77,13 +77,12 @@ def evaluate_model(model_path, num_episodes=100):
                 with torch.no_grad():
                     action, log_prob, val = policy.act(img.unsqueeze(0), state.unsqueeze(0))
                 
-                # Before step, convert action to numpy and clip it properly
+                # Before step, convert action to numpy and clip 
                 action_np = action.squeeze().numpy()  # Remove any extra dimensions
-                action_np = np.clip(action_np, -1.0, 1.0)  # Use numpy's clip function
+                action_np = np.clip(action_np, -1.0, 1.0)  
                 next_obs, reward, terminated, truncated, info = env.step(action_np)
 
-                # --- Update State and Metrics ---
-                obs = next_obs # Update the observation dictionary
+                obs = next_obs # Update observation for next step
                 ep_reward += reward
                 ep_steps += 1
                 route_completion = info.get("route_completion", route_completion) # Keep last known value if not present
@@ -94,13 +93,13 @@ def evaluate_model(model_path, num_episodes=100):
                     terminated = True # End episode on success criteria met
 
             if not (terminated or truncated): # Should not happen if loop condition is correct, but for safety
-                 print(f"Warning: Episode {episode_idx} ended unexpectedly.")
+                    print(f"Warning: Episode {episode_idx} ended unexpectedly.")
 
             all_rewards.append(ep_reward)
             all_route_completions.append(route_completion)
 
             if not (route_completion >= 0.98): 
-                 print(f"Episode {episode_idx}: Finished. Steps: {ep_steps}, Reward: {ep_reward:.2f}, Route: {route_completion:.3f}")
+                    print(f"Episode {episode_idx}: Finished. Steps: {ep_steps}, Reward: {ep_reward:.2f}, Route: {route_completion:.3f}")
 
 
         except Exception as e:
@@ -128,14 +127,8 @@ def evaluate_model(model_path, num_episodes=100):
 
 
 if __name__ == "__main__":
-    # --- Configuration ---
-    # IMPORTANT: Make sure this path points to the correct saved model file
-    # It should be the final model saved by your training script, likely inside the run_dir/checkpoints or run_dir itself
-    # Example: model_path = "./logs/ppo_metadrive_cnn/PPO_CNN_YYYYMMDD_HHMMSS/ppo_final_model.pth"
-    # Or potentially: model_path = "./logs/ppo_metadrive_cnn/PPO_CNN_YYYYMMDD_HHMMSS/checkpoints/ppo_checkpoint_step_3000000.pt" # if evaluating a checkpoint
-    
-    # You need to replace this placeholder with the actual path to your model
-    MODEL_PATH = "ppo_final_model.pth"  # <--- CHANGE THIS
+
+    MODEL_PATH = "ppo_final_model.pth"  
 
     NUM_EVAL_EPISODES = 100
 

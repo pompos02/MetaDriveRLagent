@@ -1,5 +1,3 @@
-# environment.py
-
 import gymnasium as gym
 from metadrive.envs import MetaDriveEnv
 from metadrive.obs.state_obs import LidarStateObservation
@@ -12,10 +10,8 @@ class StraightCornerEnv(MetaDriveEnv):
     def default_config(cls):
         config = super(StraightCornerEnv, cls).default_config()
 
-        # Use your LidarStateObservation (or StateObservation)
         config["agent_observation"] = LidarStateObservation
 
-        # Force the map to "SSS" (3-segment straight)
         config["map"] = "SSSCSSSSC"
 
         # Example: no traffic

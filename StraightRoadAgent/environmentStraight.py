@@ -1,5 +1,3 @@
-# environment.py
-
 import gymnasium as gym
 from metadrive.envs import MetaDriveEnv
 from metadrive.obs.state_obs import LidarStateObservation
@@ -12,35 +10,27 @@ class StraightEnv(MetaDriveEnv):
     def default_config(cls):
         config = super(StraightEnv, cls).default_config()
 
-        # Use your LidarStateObservation (or StateObservation)
         config["agent_observation"] = LidarStateObservation
 
-        # Force the map to "SSS" (3-segment straight)
         config["map"] = "SSSSSSSSS"
 
-        # Example: no traffic
         config["traffic_density"] = 0.0
 
-        # Example: no random agent shape
         config["random_agent_model"] = False
 
-        # Use continuous action
         config["discrete_action"] = False
         config["use_multi_discrete"] = False
 
-        # Example horizon
         config["horizon"] = 4096
-        # map config
         config["map_config"].update({
             BaseMap.GENERATE_TYPE: MapGenerateMethod.BIG_BLOCK_NUM,
-            BaseMap.GENERATE_CONFIG: None,  # it can be a file path / block num / block ID sequence
+            BaseMap.GENERATE_CONFIG: None,  
             BaseMap.LANE_WIDTH: 3.5,
             BaseMap.LANE_NUM: 4,
             "exit_length": 50,
             "start_position": [0, 0],
         })
 
-        # Vehicle config (side detector, lane line, lidar, etc.)
         config["vehicle_config"].update({
             "lidar": {
                 "num_lasers": 72,
@@ -74,25 +64,11 @@ class StraightEnv(MetaDriveEnv):
         config["use_lateral_reward"] = False
         config["out_of_route_done"] = False
         
-        # ===== Termination Scheme =====
-        # out_of_route_done=False,
-        # out_of_road_done=True,
-        # on_continuous_line_done=True,
-        # on_broken_line_done=False,
-        # crash_vehicle_done=True,
-        # crash_object_done=True,
-        # crash_human_done=True,
-
         return config
     
     
 
     def reward_function(self, vehicle_id: str):
-        """
-        Override this func to get a new reward function
-        :param vehicle_id: id of BaseVehicle
-        :return: reward
-        """
         vehicle = self.agents[vehicle_id]
         step_info = dict()
 

@@ -4,7 +4,7 @@ import numpy as np
 from env import MyEnvNoTraffic
 
 # 1) Load the trained model
-model = PPO.load("ppo_dummy_continued.zip")
+model = PPO.load("ComplicatedMapAgent/ppoPeriplokoNoTraf.zip")
 
 config = {"use_render": True,
         "on_continuous_line_done": False,
@@ -12,10 +12,8 @@ config = {"use_render": True,
         }
 env = MyEnvNoTraffic(config)
 
-# If your environment has a new-style reset, do:
 obs, info = env.reset()
 
-# 3) Run a few episodes
 num_episodes = 3
 for ep in range(num_episodes):
     print(f"Episode {ep+1} ==================================")
@@ -31,8 +29,6 @@ for ep in range(num_episodes):
         obs, reward, terminated, truncated, info = env.step(action)
         episode_reward += reward
 
-        # Render the environment
-        # If your environment uses "env.render()", call it each step:
         env.render()
 
     print(f"Episode {ep+1} reward: {episode_reward}")

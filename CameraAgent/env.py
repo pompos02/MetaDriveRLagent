@@ -50,7 +50,6 @@ class MyEnvNoTraffic(MetaDriveEnv):
         })
         
 
-        # Configure vehicle-specific settings, including which sensor to use for image obs
         config["vehicle_config"].update({
             "image_source": "rgb", 
         })

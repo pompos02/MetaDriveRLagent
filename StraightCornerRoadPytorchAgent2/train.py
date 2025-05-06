@@ -1,6 +1,3 @@
-# %%
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,10 +9,6 @@ from dataclasses import dataclass
 from metadrive.envs import MetaDriveEnv
 
 from torch.utils.tensorboard import SummaryWriter
-
-
-# %%
-
 
 def collect_trajectory(env:gym.Env, policy:typing.Callable[[npt.NDArray], int]) -> tuple[list[npt.NDArray], list[int], list[float]]:
     """
@@ -39,12 +32,7 @@ def collect_trajectory(env:gym.Env, policy:typing.Callable[[npt.NDArray], int]) 
         episode_length += 1 # +++ Increment length +++
         if terminated or truncated:
             break
-    # +++ Return episode length as well +++
     return observations, actions, rewards, episode_length
-
-
-
-# %%
 
 
 def deviceof(m: nn.Module) -> torch.device:
@@ -53,8 +41,6 @@ def deviceof(m: nn.Module) -> torch.device:
     """
     return next(m.parameters()).device
 
-# %%
-
 
 def obs_batch_to_tensor(obs: list[npt.NDArray[np.float32]], device: torch.device) -> torch.Tensor:
     """
@@ -62,12 +48,6 @@ def obs_batch_to_tensor(obs: list[npt.NDArray[np.float32]], device: torch.device
     """
     return torch.tensor(np.stack(obs), dtype=torch.float32, device=device)
 
-
-
-# %%
-
-
-# %%
 class Actor(nn.Module):
     def __init__(self, initial_sigma=0.5, final_sigma=0.05, exploration_decay_epochs=5000):
         super().__init__()
@@ -75,26 +55,20 @@ class Actor(nn.Module):
         self.fc2 = nn.Linear(512, 512)
         self.fc3 = nn.Linear(512, 2)    # raw output
 
-        # --- Exploration Parameters ---
+        # Exploration Parameters 
         self.initial_sigma = initial_sigma
         self.final_sigma = final_sigma
         self.exploration_decay_epochs = exploration_decay_epochs
         self.current_sigma = self.initial_sigma # Initialize sigma
-        # -----------------------------
 
     def forward(self, x: torch.Tensor) -> torch.distributions.MultivariateNormal:
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         raw = self.fc3(x)   # shape [batch_size, 2]
-
-        # If your action space is Box(-1,1,2):
-        #   raw[:,0] is steering in [-1,1]
-        #   raw[:,1] is throttle in [-1,1]
-        steering = torch.tanh(raw[:, 0])        # [-1,1]
-        throttle = torch.tanh(raw[:, 1])        # [-1,1]
+        steering = torch.tanh(raw[:, 0])       
+        throttle = torch.tanh(raw[:, 1])        
         mu = torch.stack([steering, throttle], dim=1)
 
-        # --- Use current_sigma for exploration ---
         # Ensure sigma is on the same device as mu
         sigma_val = self.current_sigma
         # Create a diagonal covariance matrix
@@ -103,7 +77,6 @@ class Actor(nn.Module):
         cov_diag = torch.full_like(mu, sigma_val**2) # Use variance (sigma squared)
         # Clamp variance to avoid numerical issues if sigma becomes very small
         cov_diag = torch.clamp(cov_diag, min=1e-6)
-        # -----------------------------------------
 
         return torch.distributions.MultivariateNormal(mu, torch.diag_embed(cov_diag))
 
@@ -149,9 +122,6 @@ class Critic(nn.Module):
 
 
 def rewards_to_go(trajectory_rewards: list[float], gamma) -> list[float]:
-    """
-    Computes the gamma discounted reward-to-go for each state in the trajectory.
-    """
 
     trajectory_len = len(trajectory_rewards)
 
@@ -238,9 +208,6 @@ def compute_ppo_loss(
     # we take the average loss over all examples
     return ppo_loss_per_example.mean()
 
-
-
-# %%
 def train_ppo(
     actor: Actor,
     critic: Critic,
@@ -277,12 +244,10 @@ def train_ppo(
     # in (Batch, 2) - Ensure the order matches the policy output
     chosen_action_tensor = torch.tensor(action_batch, dtype=torch.float32, device=device)
 
-    # in (Batch,) - Normalize advantages? (Optional but often helpful)
     advantage_batch_np = np.array(advantage_batch)
-    # advantage_batch_np = (advantage_batch_np - advantage_batch_np.mean()) / (advantage_batch_np.std() + 1e-8) # Optional normalization
     advantage_batch_tensor = torch.tensor(advantage_batch_np, dtype=torch.float32, device=device)
 
-    # --- Train Critic ---
+    # Train Critic 
     # Multiple critic updates per PPO batch can sometimes stabilize training
     critic_losses_epoch = []
     for _ in range(config.ppo_grad_descent_steps): # Match grad steps or set independently
@@ -295,9 +260,6 @@ def train_ppo(
         critic_optimizer.step()
         critic_losses_epoch.append(critic_loss.item())
     avg_critic_loss = np.mean(critic_losses_epoch)
-
-
-    # --- Train Actor ---
 
     # Get the action log-probabilities from the policy *before* the PPO updates (theta_k)
     # The actor's current_sigma is implicitly used here when forward is called.
@@ -342,17 +304,15 @@ def set_lr(optimizer: torch.optim.Optimizer, lr: float) -> None:
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
-# --- Define Exploration Hyperparameters ---
-INITIAL_SIGMA = 0.5  # Start with more exploration (Increased from 0.5)
-FINAL_SIGMA = 0.05   # Reduce exploration significantly (Increased from 0.05)
-EXPLORATION_DECAY_EPOCHS = 3000 # Decay over most of the training
 
-# --- TensorBoard Setup ---
-log_dir = "runs/PPO_MetaDrive_DecayExplore_v1" # Choose a version/name
-os.makedirs(log_dir, exist_ok=True) # Create dir if needed
+INITIAL_SIGMA = 0.5  
+FINAL_SIGMA = 0.05   
+EXPLORATION_DECAY_EPOCHS = 3000 
+
+log_dir = "runs/PPO_MetaDrive_DecayExplore_v1" 
+os.makedirs(log_dir, exist_ok=True)
 writer = SummaryWriter(log_dir=log_dir)
 print(f"--- TensorBoard logging initialized. Log directory: {log_dir} ---")
-# -------------------------
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -364,20 +324,19 @@ actor = Actor(
     final_sigma=FINAL_SIGMA,
     exploration_decay_epochs=EXPLORATION_DECAY_EPOCHS
 ).to(device)
-# -------------------------------------------------
 critic = Critic().to(device)
 
 # Learning Rates - Adjusted based on typical PPO findings
-ACTOR_LR = 5e-5 # Often smaller than critic LR
-CRITIC_LR = 1e-4 # Often larger to learn value function faster
+ACTOR_LR = 5e-5 
+CRITIC_LR = 1e-4 
 
 actor_optimizer = torch.optim.Adam(actor.parameters(), lr=ACTOR_LR)
 critic_optimizer = torch.optim.Adam(critic.parameters(), lr=CRITIC_LR)
 
 policy = NNPolicy(actor)
 
-step = 0 # Represents the training epoch/batch number
-total_timesteps = 0 # Track total environment steps
+step = 0 
+total_timesteps = 0 
 returns_window = [] # For smoothed return logging
 MAX_RETURNS_WINDOW = 100 # Size of the smoothing window
 
@@ -386,10 +345,6 @@ actor_losses = []
 critic_losses = []
 
 from gymnasium import Env
-
-
-
-# Ensure you have latest metadrive: pip install -U metadrive-simulator
 
 config = {
             "start_seed": 0,
@@ -436,7 +391,6 @@ print("-" * 30)
 # Train
 try: 
     while step < TRAIN_EPOCHS:
-        # --- Update exploration sigma before collecting trajectories ---
         actor.update_exploration(step)
         current_sigma = actor.current_sigma # Get current sigma for logging
 
@@ -451,8 +405,7 @@ try:
 
         # --- Data Collection Phase ---
         for ep_num in range(EPISODES_PER_BATCH):
-            # Collect trajectory
-            # Ensure collect_trajectory returns length now
+
             obs_traj, act_traj, rew_traj, ep_len = collect_trajectory(env, policy)
             rtg_traj = rewards_to_go(rew_traj, GAMMA)
             # Advantage calculation uses the critic, not directly affected by actor's sigma
@@ -460,7 +413,7 @@ try:
 
             # Update batch lists
             obs_batch.extend(obs_traj)
-            act_batch.extend(act_traj) # act_traj contains tuples
+            act_batch.extend(act_traj) 
             rtg_batch.extend(rtg_traj)
             adv_batch.extend(adv_traj)
 
@@ -473,7 +426,6 @@ try:
         total_timesteps += batch_total_timesteps # Update global timestep counter
 
         # --- Learning Phase ---
-        # train_ppo now returns average losses for the batch
         batch_avg_actor_loss, batch_avg_critic_loss = train_ppo(
             actor,
             critic,
@@ -485,10 +437,9 @@ try:
             rtg_batch,
             CONFIG,
         )
-        actor_loss_val = batch_avg_actor_loss[0] # Extract float from list
+        actor_loss_val = batch_avg_actor_loss[0] 
         critic_loss_val = batch_avg_critic_loss[0]
 
-        # --- Logging Phase ---
         # Calculate return statistics for the batch
         avg_batch_return = np.mean(batch_ep_returns)
         std_batch_return = np.std(batch_ep_returns)
@@ -501,8 +452,6 @@ try:
             returns_window = returns_window[-MAX_RETURNS_WINDOW:]
         avg_window_return = np.mean(returns_window) if returns_window else 0.0
 
-
-        # +++ Log metrics to TensorBoard +++
         writer.add_scalar('Reward/BatchAverageReturn', avg_batch_return, step)
         writer.add_scalar('Reward/BatchStdReturn', std_batch_return, step)
         writer.add_scalar('Reward/BatchMedianReturn', median_batch_return, step)
@@ -524,7 +473,7 @@ try:
 
 
         # Print statistics 
-        if step % 10 == 0 or step == TRAIN_EPOCHS - 1: # Print every 10 steps
+        if step % 10 == 0 or step == TRAIN_EPOCHS - 1: 
             print(
                 f"Epoch {step}/{TRAIN_EPOCHS} | "
                 f"Timesteps: {total_timesteps} | "
@@ -536,23 +485,20 @@ try:
                 f"Sigma: {current_sigma:.4f}"
             )
 
-        step += 1 # Increment epoch counter
+        step += 1 
 
 finally: 
     if 'writer' in locals() and writer:
         writer.close()
         print("--- TensorBoard Writer Closed ---")
-    # -------------------------------
-    # --- Close Environment ---
     if 'env' in locals() and env:
         env.close()
         print("--- MetaDrive Environment Closed ---")
-    # -------------------------
 
 
 print("--- Training Finished ---")
 print("Saving final models...")
-save_path_actor = os.path.join(log_dir, "ppo_actor_final.pt") # Save inside log_dir
+save_path_actor = os.path.join(log_dir, "ppo_actor_final.pt") 
 save_path_critic = os.path.join(log_dir, "ppo_critic_final.pt")
 torch.save(actor.state_dict(), save_path_actor)
 torch.save(critic.state_dict(), save_path_critic)
@@ -575,7 +521,6 @@ if os.path.exists(actor_load_path):
 else:
     print(f"Warning: Actor model file not found at {actor_load_path}. Using untrained model.")
 
-# Critic isn't strictly needed for evaluation rollout, but good practice
 if os.path.exists(critic_load_path):
     eval_critic.load_state_dict(torch.load(critic_load_path, map_location=device))
     print(f"Loaded Critic model from {critic_load_path}")
@@ -602,7 +547,7 @@ try:
 
     for i in range(num_eval_episodes):
         print(f"\n--- Running Evaluation Episode {i+1}/{num_eval_episodes} ---")
-        # Use the modified collect_trajectory that returns length
+
         obs_traj, act_traj, rew_traj, ep_len = collect_trajectory(eval_env, eval_policy)
         ep_reward = sum(rew_traj)
         total_eval_reward += ep_reward

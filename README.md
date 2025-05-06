@@ -240,8 +240,6 @@ Training the agent with the same map (Complex track), environment, and reward fu
 
 The run wanted to complete just 3,000,000 steps, with an average progress on the map of 14% (after the first turn).
 
-Judging from the graphs, we could argue that if training continued, the agent would likely complete a larger percentage of the track.
-
 Due to time constraints, training was run again with exactly the same parameters, environment, and reward function, with the only change being a simpler track with just 3 turns.
 
 ![Final results and input observation](media/CNN.gif)

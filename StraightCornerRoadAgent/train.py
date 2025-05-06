@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     policy_kwargs = dict(
         net_arch=[256, 256],  # two layers with 256 units each
-        activation_fn=torch.nn.ReLU, # if you want to specify an activation
+        activation_fn=torch.nn.ReLU, 
         log_std_init=-3.0,  
     )
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         tensorboard_log="./logs/tb_logs/"
     )
 
-    # 1) Callback to save checkpoints
+    # Callback to save checkpoints
     checkpoint_callback = CheckpointCallback(
         save_freq=100_000,          # Save every 100k timesteps
         save_path="./checkpoints",  # Directory to save models
@@ -94,7 +94,5 @@ if __name__ == "__main__":
         callback=combined_callback,
         progress_bar=True
     )
-
-    # Save final model
     model.save("ppo")
     print("Model saved as ppo.zip")

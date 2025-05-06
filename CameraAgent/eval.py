@@ -2,14 +2,11 @@ import torch
 import numpy as np
 import time
 
-# Import the correct ActorCritic from test.py
 from train import ActorCritic
 from env import MyEnvNoTraffic
 import cv2
 def evaluate_model(model_path, num_episodes=3):
-    """
-    Evaluate the trained PPO model for `num_episodes` with rendering enabled.
-    """
+
     eval_config = {
         "use_render": True, 
         "interface_panel": ["rgb_camera", "dashboard"],
@@ -28,7 +25,6 @@ def evaluate_model(model_path, num_episodes=3):
     policy.load_state_dict(torch.load(model_path))
     policy.eval()
 
-    # === 3) Run episodes ===
     for episode_idx in range(1, num_episodes + 1):
 
         obs_tuple = env.reset()
@@ -48,9 +44,9 @@ def evaluate_model(model_path, num_episodes=3):
             with torch.no_grad():
                 action, log_prob, val = policy.act(img.unsqueeze(0), state.unsqueeze(0))
             
-            # Before step, convert action to numpy and clip it properly
-            action_np = action.squeeze().numpy()  # Remove any extra dimensions
-            action_np = np.clip(action_np, -1.0, 1.0)  # Use numpy's clip function
+            # Before step, convert action to numpy and clip
+            action_np = action.squeeze().numpy()  
+            action_np = np.clip(action_np, -1.0, 1.0)  
             next_obs, reward, terminated, truncated, info = env.step(action_np)
 
             ep_reward += reward
@@ -73,7 +69,6 @@ def evaluate_model(model_path, num_episodes=3):
         print(f"Episode {episode_idx} finished in {ep_steps} steps "
                 f"with total reward {ep_reward:.2f} and route completion {route_completion:.2f}")
 
-    # === 4) Done, close environment ===
     env.close()
 
 

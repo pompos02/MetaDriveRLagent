@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from env import MyEnvNoTraffic
 
-# --- Checkpoint Saving Function ---------------------------------------------
+# --- Checkpoint Saving Function --
 def save_checkpoint(step, policy, optimizer, episode_count, save_dir):
     os.makedirs(save_dir, exist_ok=True)
     checkpoint = {
@@ -21,12 +21,12 @@ def save_checkpoint(step, policy, optimizer, episode_count, save_dir):
     ckpt_path = os.path.join(save_dir, f"ppo_checkpoint_step_{step}.pt")
     torch.save(checkpoint, ckpt_path)
     print(f"\n💾 Checkpoint saved at step {step} to {ckpt_path}")
-# ----------------------------------------------------------------------------
 
-# --- CNN-based Actor-Critic -----------------------------------------------
+
+# --- CNN-based Actor-Critic ----
 class ActorCritic(nn.Module):
     def __init__(self, image_channels, state_dim, action_dim,
-                 hidden_sizes=(256, 256), log_std_init=-0.5):
+                    hidden_sizes=(256, 256), log_std_init=-0.5):
         super().__init__()
         # CNN for image processing (9 channels: 3 frames × 3 RGB)
         self.cnn = nn.Sequential(
@@ -67,12 +67,12 @@ class ActorCritic(nn.Module):
         action = dist.sample()
         log_prob = dist.log_prob(action).sum(-1)
         return action, log_prob, value
-# ----------------------------------------------------------------------------
 
-# --- Rollout Buffer for dict obs -------------------------------------------
+
+# --- Rollout Buffer for dict obs ----
 class RolloutBuffer:
     def __init__(self, size, image_channels, img_h, img_w, state_dim,
-                 action_dim, gamma=0.99, lam=0.95):
+                    action_dim, gamma=0.99, lam=0.95):
         self.size = size
         self.gamma = gamma
         self.lam = lam
@@ -136,9 +136,8 @@ class RolloutBuffer:
         adv_batch = (adv_batch - adv_mean) / (adv_std + 1e-8)
         self.ptr = 0
         return img_batch, state_batch, act_batch, logp_batch, adv_batch, ret_batch
-# ----------------------------------------------------------------------------
 
-# --- PPO Update -------------------------------------------------------------
+# --- PPO Update ---
 def ppo_update(policy, optimizer, buffer, writer, current_step,
                clip_ratio=0.2, vf_coef=0.5, ent_coef=0.001,
                epochs=10, batch_size=256, grad_clip_norm=0.5):
@@ -191,7 +190,7 @@ def ppo_update(policy, optimizer, buffer, writer, current_step,
     writer.add_scalar("Update/PolicyStd", policy.log_std.exp().mean().item(), current_step)
     writer.add_scalar("Update/ReturnMean", ret_mean.item(), current_step)
     writer.add_scalar("Update/ReturnStd", ret_std.item(), current_step)
-# ----------------------------------------------------------------------------
+
 
 # === Main Training Function ===
 def train_ppo_with_tensorboard():
