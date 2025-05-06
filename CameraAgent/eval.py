@@ -73,5 +73,5 @@ def evaluate_model(model_path, num_episodes=3):
 
 
 if __name__ == "__main__":
-    model_path = "ppo_final_model.pth"
+    model_path = "CameraAgent/ppo_final_model.pth"
     evaluate_model(model_path=model_path, num_episodes=3)

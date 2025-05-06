@@ -4,7 +4,7 @@ import numpy as np
 from environmentStraight import StraightEnv
 
 
-model = PPO.load("ppo_straight.zip")
+model = PPO.load("StraightRoadAgent/ppo_straight.zip")
 
 config = {"use_render": True}
 env = StraightEnv(config)

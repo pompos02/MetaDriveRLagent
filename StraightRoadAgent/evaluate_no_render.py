@@ -2,13 +2,13 @@ import torch
 import numpy as np
 
 from stable_baselines3 import PPO
-from StraightRoadAgent.environmentStraight import StraightEnv
+from environmentStraight import StraightEnv
 
 
 
 num_episodes = 1000
 env = StraightEnv()
-model = PPO.load("ppo_straight.zip")
+model = PPO.load("StraightRoadAgent/ppo_straight.zip")
 
 success_count = 0
 successful_steps = []
