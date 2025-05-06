@@ -3,20 +3,29 @@
 # Exit on any error
 set -e
 
-# Create the conda environment
-conda create -n 1stProject4228 python=3.10 -y
-
-# Initialize conda for non-interactive use
+# Initialize conda
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
+# Avoid numeric names: 'proj_4228' instead of '1stProject4228'
+ENV_NAME="proj_4228"
+
+# Create the conda environment
+conda create -n "$ENV_NAME" python=3.10 -y
+
+# Activate the environment
+conda activate "$ENV_NAME"
 
 # Install metadrive in editable mode
-cd metadrive
-pip install -e .
-cd ..
+if [ -d "metadrive" ]; then
+    cd metadrive
+    pip install -e .
+    cd ..
+else
+    echo "Directory 'metadrive' not found!"
+    exit 1
+fi
 
-conda activate 1stProject4228
 # Install remaining dependencies
 pip install -r requirements.txt
 
-echo "Environment '1stProject4228' setup complete."
+echo "Environment '$ENV_NAME' setup complete."
