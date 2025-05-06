@@ -10,7 +10,7 @@ MetaDrive is an advanced open-source simulation environment specifically designe
 
 ### Setup:
 Assuming you have a terminal with conda support:
-1. Run the setup_env.sh file and then activate the environment with: `conda activate 1stProject4228`
+1. Run the 'setup_env.sh' or the 'setup_env.bat' for windows file and then activate the environment with: `conda activate proj_4228`
 
 Alternatively, if you prefer to install packages manually:
 1. Install the packages listed in the requirements.txt file
@@ -36,7 +36,7 @@ All experiments mentioned are those discussed throughout the project.
 
 ### How to Run an Experiment
 1. `python {experiment_name}/eval.py`, if you want rendering
-2. `python {experiment_name}/eval_no_render.py`, if you don't want rendering
+2. `python {experiment_name}/evaluate_no_render.py`, if you don't want rendering
 
 
 
