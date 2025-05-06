@@ -20,7 +20,7 @@ Note: Python 3.10 is recommended, as testing was done on this version.
 
 ### Running experiments
 After setup, verify that:
-- You have activated the correct environment (`conda activate 1stProject4228`)
+- You have activated the correct environment (`conda activate proj_4228`)
 - You are inside the src folder
 
 The src folder includes the following experiments (folders):
